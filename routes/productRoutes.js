@@ -2,11 +2,18 @@ const express = require('express');
 const ProductRoute = express.Router()
 
 //Importing Product Controllers
-const {createProduct,responseOP} = require('../controllers/ProductController')
+const {createProduct, getProductByID,deleteProductById,UpdateProductById} = require('../controllers/ProductController');
+const db = require('../models');
 
 ProductRoute.route('/')
-.get(responseOP)
 .post(createProduct)
 
 
+
+ProductRoute.route('/:id')
+.get(getProductByID)
+.delete(deleteProductById)
+.put(UpdateProductById)
 module.exports = ProductRoute;
+
+
