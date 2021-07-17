@@ -58,7 +58,28 @@ exports.createProduct = [uploads.single('Image'), async (req, res) => {
     }
 }]
 
-
+//Getting all products 
+exports.getProduct = async (req,res)=> {
+    try {
+        const data = await db.Products.findAndCountAll({
+            include:[{
+                model:db.Category,
+                attribute:['CName']
+            }]
+        })
+        return(
+            res.status(200).json({
+                success:true,
+                data
+            })
+        )
+    } catch (err) {
+        return res.status(500).json({
+            success:false,
+            message: "Something went Wrong"
+        })
+    }
+}
 
 //Getting Products By ID 
 exports.getProductByID = async (req,res)=> {
@@ -123,7 +144,7 @@ exports.deleteProductById = async (req,res)=> {
 }
 
 //Update a Product By ID
-exports.UpdateProductById = [uploads.single('Image'), async (req, res, next) => {
+exports.updateProductById = [uploads.single('Image'), async (req, res, next) => {
     try {
         const id = req.params.id;
         if (req.file) {
