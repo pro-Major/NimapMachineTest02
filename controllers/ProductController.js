@@ -49,11 +49,10 @@ exports.createProduct = [uploads.single('Image'), async (req, res) => {
             data
         })
     }
-    catch (err) {
+    catch (error) {
         return res.status(500).json({
             success:false,
-            message: "Something went Wrong",
-            err: err.name
+            error: error.errors[0].message
         })
     }
 }]

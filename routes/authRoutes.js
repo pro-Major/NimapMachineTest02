@@ -8,7 +8,9 @@ AuthRoute
     .post(
     [
         body('email').trim().isEmail().withMessage('Email is not valid ')
-        .normalizeEmail().toLowerCase(),
+        .normalizeEmail()
+        .toLowerCase(),
+        body('number').trim().isNumeric().isMobilePhone().withMessage("Mobile Number is Not Valid"),
         body('password').trim().isLength(2).withMessage('Password min length 2'),
 
         (req, res, next) => {
@@ -31,3 +33,10 @@ AuthRoute
 
 
 module.exports = AuthRoute;
+
+// isMobilePhone: {
+//     options: ['en-US'],
+//     errorMessage: 'Must provide a valid US phone number.'
+//   },
+//   errorMessage: 'Must provide a valid phone number.'
+// }

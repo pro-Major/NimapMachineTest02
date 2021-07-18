@@ -4,7 +4,7 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
 const products = sequelize.define('Products', {
-    PName: DataTypes.STRING, 
+    PName: {type : DataTypes.STRING, unique:{args:true,msg:"Product Already Exist"}},
     price: DataTypes.INTEGER,
     Image: DataTypes.STRING,
     CategoryId: DataTypes.INTEGER

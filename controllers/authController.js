@@ -8,21 +8,22 @@ const bcrypt = require('bcrypt');
 //Register a User 
 exports.SignUp = async (req, res) => {
     try {
-        const { name, email, password, roles } = req.body;
+        const { name, email,number, password, roles } = req.body;
         //Converting passwords in Hash Format
         let hashPassword = await bcrypt.hash(password, 10)
-        const user = await db.User.create({ name, email, password: hashPassword, roles })
+        const user = await db.User.create({ name, email,number, password: hashPassword, roles })
         return (
             res.status(200).json({
                 success: true,
                 user
             })
         )
-    } catch (err) {
+    } catch (error) {
+        console.log(error);
         res.status(400).json({
             success: false,
             message: 'Registeration Failed',
-            err: err.name
+            error: error
         })
     }
 
