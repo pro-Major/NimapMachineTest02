@@ -1,30 +1,35 @@
 const express = require('express');
 const app = express();
-
+let ejs = require('ejs');
+const bodyParser = require('body-parser')
+const urlencodedParser = bodyParser.urlencoded({extended:false})
 //Importing All Routes 
 const ProductRoute = require('./routes/productRoutes');
 const CategoryRoute = require('./routes/categoryRoutes');
 const AuthRoute = require('./routes/authRoutes');
 
 
+//Set Templating Engine
+app.set('view engine','ejs')
 
-//Importing Inbuilt Middlewares
+//Importing  Middlewares
 app.use(express.json());
 app.use('/uploads/', express.static("uploads"));
 
 
 
-
-
-
-//Using Routes 
+//View Routes
 app.get('/',(req,res)=> {
-    res.send('Hello! How Are You Developer?');
+    res.render('index')
 })
+app.get('/register',(req,res)=>{
+    res.render('register')
+})  
+
 
 app.use('/api/products',ProductRoute);
 app.use('/api/category',CategoryRoute);
-app.use('/api/user',AuthRoute);
+app.use('/api/user',urlencodedParser,AuthRoute);
 
 
 
