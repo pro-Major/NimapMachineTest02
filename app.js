@@ -20,7 +20,7 @@ app.use('/uploads/', express.static("uploads"));
 
 //View Routes
 app.get('/',(req,res)=> {
-    res.render('index')
+    res.render('login')
 })
 app.get('/register',(req,res)=>{
     res.render('register')
