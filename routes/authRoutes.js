@@ -5,10 +5,11 @@ const { body, validationResult } = require('express-validator')
 
 AuthRoute
     .route('/register')
-    .post([
+    .post(
+    [
         body('email').trim().isEmail().withMessage('Email is not valid ')
-            .normalizeEmail().toLowerCase().isEmpty(),
-        body('password').trim().isLength(5).isEmpty().withMessage('Password min length 5'),
+        .normalizeEmail().toLowerCase(),
+        body('password').trim().isLength(2).withMessage('Password min length 2'),
 
         (req, res, next) => {
             const errors = validationResult(req);
@@ -21,7 +22,8 @@ AuthRoute
             }
             next()
         },
-    ], SignUp)
+    ], 
+    SignUp)
 
 AuthRoute
     .route('/login')
