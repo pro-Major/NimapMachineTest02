@@ -1,7 +1,10 @@
 const db = require('../models/index');
-
+const {createToken} = require('../utils/index');
 //importing bcrypt to convert password into hash format
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
+const redis = require('../redisConnect')
+
 
 
 
@@ -56,8 +59,13 @@ exports.Login = async (req, res) => {
                 })
             )
         }
+        const { token, refreshtoken } = createToken(useremail)
+        console.log("token,refreshtoken", token, refreshtoken)
+
         res.status(200).send({
             status: "Login Successfully",
+            token: token,
+            refreshtoken: refreshtoken,
             useremail
         })
 
@@ -68,4 +76,19 @@ exports.Login = async (req, res) => {
             message: "Internal Server Error "
         })
     }
+}
+//Generate Refresh Token
+exports.generateRefreshToken = (id, email) => {
+    console.log("ID EMAIL IN GENERATE REFRESH", id, email)
+    const refreshtoken = jwt.sign({ id, email }, process.env.JWT_REFERESHKEY, { expiresIn: process.env.JWT_REFERESHTIME })
+    console.log("REFRESH TOKEN", refreshtoken)
+
+    redis.get(id.toString(), (err, data) => {
+        if (err) throw err;
+        redis.set(id.toString(), JSON.stringify({ token: refreshtoken }));
+    })
+
+
+
+    return refreshtoken;
 }

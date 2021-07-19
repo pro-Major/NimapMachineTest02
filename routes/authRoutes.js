@@ -8,8 +8,7 @@ AuthRoute
     .post(
     [
         body('email').trim().isEmail().withMessage('Email is not valid ')
-        .normalizeEmail()
-        .toLowerCase(),
+        .normalizeEmail().toLowerCase(),
         body('number').trim().isNumeric().isMobilePhone().withMessage("Mobile Number is Not Valid"),
         body('password').trim().isLength(2).withMessage('Password min length 2'),
 
@@ -29,7 +28,25 @@ AuthRoute
 
 AuthRoute
     .route('/login')
-    .post(Login)
+    .post(
+        [
+            body('email').trim().isEmail().withMessage('Email is not valid ')
+            .normalizeEmail().toLowerCase(),
+            body('password').trim().isLength(2).withMessage('Password min length 2'),
+    
+            (req, res, next) => {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    res.status(400).json({
+                        success: false,
+                        errors
+                    })
+                    return;
+                }
+                next()
+            },
+        ], 
+        Login)
 
 
 module.exports = AuthRoute;

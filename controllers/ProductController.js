@@ -1,4 +1,5 @@
-const db = require('../models/index')
+const db = require('../models/index');
+const Excel = require('exceljs');
 const multer = require('multer');
 const port = 'http://localhost:5000'
 
@@ -58,27 +59,104 @@ exports.createProduct = [uploads.single('Image'), async (req, res) => {
 }]
 
 //Getting all products 
-exports.getProduct = async (req,res)=> {
+exports.createProduct = [uploads.single('Image'), async (req, res) => {
     try {
-        const data = await db.Products.findAndCountAll({
-            include:[{
-                model:db.Category,
-                attribute:['CName']
-            }]
+        const data = await db.Products.create({
+            PName: req.body.PName,
+            price: req.body.price,
+            Image: port + "/uploads/" + req.file.filename,
+            CategoryId: req.body.CategoryId
         })
-        return(
-            res.status(200).json({
-                success:true,
-                data
-            })
-        )
-    } catch (err) {
+        res.status(200).json({
+            status: "Successfully Addded",
+            data
+        })
+    }
+    catch (err) {
         return res.status(500).json({
-            success:false,
+            message: "Something went Wrong",
+            err: err.errors[0].message
+
+        })
+    }
+}]
+
+//Getting All Products with pagination
+
+exports.getProduct = async (req, res) => {
+    try {
+
+        const getPagination = (page, size) => {
+            const limit = size ? +size : 5;
+            const offset = page ? page * limit : 0;
+            return { limit, offset };
+        };
+
+
+        const getPagingData = (data, page, limit) => {
+            const { count: totalItems, rows: products } = data;
+            const currentPage = page ? +page : 0;
+            const totalPages = Math.ceil(totalItems / limit);
+            return { totalItems, products, totalPages, currentPage };
+        };
+
+        const condition = req.query.price ? { price: req.query.price } : {}
+        const { page, size } = req.query;
+        const { limit, offset } = getPagination(page, size)
+
+        const data = await db.Products.findAndCountAll({
+            where: condition,
+            limit: limit,
+            offset: offset,
+            include: [
+                {
+                    model: db.Category,
+                    attribute: ['CName']
+                }
+            ]
+        })
+        const { products } = getPagingData(data, page, limit)
+        const workbook = new Excel.Workbook();
+        const worksheet = workbook.addWorksheet('Product Excel')
+        worksheet.columns = [
+            {
+                header: 'ID', key: 'id', width: 20
+            },
+            {
+                header: 'Product Name', key: 'PName', width: 20
+            },
+            {
+                header: 'Price', key: 'price', width: 20
+            },
+            {
+                header: 'Image', key: 'Image', width: 40
+            },
+            {
+                header: 'Category', key: 'CategoryId', width: 20
+            }
+        ]
+        let count = 1;
+        const pdata = await db.Products.findAll({})
+        pdata.forEach(product => {
+            worksheet.addRow(product)
+            count += 1;
+        });
+        worksheet.getRow(1).eachCell((cell) => {
+            cell.font = { bold: true }
+        })
+        const wexcel = await workbook.xlsx.writeFile(`${__dirname}/Product.xlsx`)
+        res.status(200).json({
+            status: "Can read the data from the excel fille",
+            products
+        })
+    }
+    catch (err) {
+        return res.status(500).json({
             message: "Something went Wrong"
         })
     }
 }
+
 
 //Getting Products By ID 
 exports.getProductByID = async (req,res)=> {
