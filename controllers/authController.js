@@ -1,5 +1,5 @@
 const db = require('../models/index');
-const {createToken} = require('../utils/index');
+const {createToken} = require('../utils');
 //importing bcrypt to convert password into hash format
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
@@ -12,6 +12,7 @@ const client = require('../redisConnect')
 exports.SignUp = async (req, res) => {
     try {
         const { name, email,number, password, roles } = req.body;
+       
         //Converting passwords in Hash Format
         let hashPassword = await bcrypt.hash(password, 10)
         const user = await db.User.create({ name, email,number, password: hashPassword, roles })
@@ -48,7 +49,7 @@ exports.Login = async (req, res) => {
         if (!useremail) {
             return (
                 res.status(400).json({
-                    message: "Email does not exists"
+                    message: "User Do Not Exist"
                 })
             )
         }

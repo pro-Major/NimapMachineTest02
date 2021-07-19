@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
-const ejs = require('ejs');
+let ejs = require('ejs');
 const morgan = require('morgan');
-const bodyParser = require('body-parser')
-const urlencodedParser = bodyParser.urlencoded({extended:false})
+const bodyParser = require('body-parser');
+const urlencodedParser = bodyParser.urlencoded({extended:false});
 //Importing All Routes 
 const ProductRoute = require('./routes/productRoutes');
 const CategoryRoute = require('./routes/categoryRoutes');
@@ -11,7 +11,7 @@ const AuthRoute = require('./routes/authRoutes');
 
 
 //Set Templating Engine
-app.set('view engine','ejs')
+app.set('view engine','ejs');
 
 //Importing  Middlewares
 app.use(express.json());
