@@ -3,7 +3,7 @@ const {createToken} = require('../utils/index');
 //importing bcrypt to convert password into hash format
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
-const redis = require('../redisConnect')
+const client = require('../redisConnect')
 
 
 
@@ -83,9 +83,9 @@ exports.generateRefreshToken = (id, email) => {
     const refreshtoken = jwt.sign({ id, email }, process.env.JWT_REFERESHKEY, { expiresIn: process.env.JWT_REFERESHTIME })
     console.log("REFRESH TOKEN", refreshtoken)
 
-    redis.get(id.toString(), (err, data) => {
+    client.get(id.toString(), (err, data) => {
         if (err) throw err;
-        redis.set(id.toString(), JSON.stringify({ token: refreshtoken }));
+        client.set(id.toString(), JSON.stringify({ token: refreshtoken }));
     })
 
 
