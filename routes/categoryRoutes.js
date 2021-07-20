@@ -1,30 +1,18 @@
-const CategoryController = require('../controllers/CategoryController')
-const authController = require('../controllers/authController')
+const {createCategory,GetCategory,RemoveCategory,UpdateCategory,GetCategoryById} = require('../controllers/CategoryController')
+const {protectTo,restrictTo} = require('../controllers/authController')
 const express = require('express')
 const catrouter = express.Router()
 
 catrouter
     .route('/')
-    .post(
-        authController.protectTo,
-        authController.restrictTo('Admin'),
-        CategoryController.createCategory
-    )
-    .get(CategoryController.GetCategory)
+    .post(restrictTo('Admin'),createCategory)
+    .get(GetCategory)
 
 catrouter
     .route('/:id')
-    .delete(
-        authController.protectTo,
-        authController.restrictTo('Admin'),
-        CategoryController.RemoveCategory
-    )
-    .get(CategoryController.GetCategoryById)
-    .put(
-        authController.protectTo,
-        authController.restrictTo('Admin'),
-        CategoryController.UpdateCategory
-    )
+    .delete(protectTo,restrictTo('Admin'),RemoveCategory)
+    .get(GetCategoryById)
+    .put(protectTo,restrictTo('Admin'),UpdateCategory)
 
 
 module.exports = catrouter;

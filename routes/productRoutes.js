@@ -5,7 +5,7 @@ const productroute = express.Router()
 
 productroute
     .route('/')
-    .post(protectTo,restrictTo('Supervisor'),createProduct)
+    .post(protectTo,restrictTo('Supervisor'),createProduct) 
     .get(getProduct)
 
 productroute

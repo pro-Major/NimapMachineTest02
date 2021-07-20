@@ -11,9 +11,11 @@ dotenv.config({ path: './.env' })
 
 exports.SignUp = async (req, res, next) => {
     try {
-        const { name, email, password, roles } = req.body;
+
+        const { name, email,number, password, roles } = req.body;
+        console.log(req.body)
         const hash = await helper.hashPassword(password)
-        const user = await db.User.create({ name, email, password: hash, roles })
+        const user = await db.User.create({ name, email,number, password: hash, roles })
         return res.status(200).send({ user })
     } catch (err) {
         res.status(400).json({
@@ -63,6 +65,7 @@ exports.Login = async (req, res, next) => {
 exports.protectTo = async (req, res, next) => {
     try {
         let token;
+        
         if (
             req.headers.authorization &&
             req.headers.authorization.startsWith("Bearer")
@@ -77,13 +80,13 @@ exports.protectTo = async (req, res, next) => {
         let decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRETKEY);
 
         console.log("DECODED VALUE", decoded)
-        const freshUser = await db.User.findByPk(decoded.id);
-        if (!freshUser) {
+        const newUser = await db.User.findByPk(decoded.id);
+        if (!newUser) {
             return res.status(400).json({
                 message: "User is not present"
             })
         }
-        req.user = freshUser.dataValues;
+        req.user = newUser.dataValues;
         req.token = token;
         console.log('BLTOKEN' + decoded.id.toString())
 
