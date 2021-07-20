@@ -1,24 +1,35 @@
+const authController = require('../controllers/authController')
+const userController = require('../controllers/userController')
 const express = require('express')
 const userroutes = express.Router()
-const {protectTo,VerifyRefreshToken,logoutFunction} = require('../controllers/authController')
-const {getMe,dashboard,GetVerificationToken} = require('../controllers/userController')
-
 
 userroutes
-    .route('/myprofile')
-    .get(protectTo,getMe)
+    .route('/getMe')
+    .get(
+        authController.protectTo,
+        userController.getMe
+    )
 
 userroutes
     .route('/dashboard')
-    .get(protectTo,dashboard)
+    .get(
+        authController.protectTo,
+        userController.dashboard
+    )
 
 userroutes
-    .route('/token') 
-    .post(VerifyRefreshToken,GetVerificationToken)
+    .route('/token')
+    .post(
+        authController.VerifyRefreshToken,
+        userController.GetVerificationToken
+    )
 
 userroutes
     .route('/logout')
-    .get(protectTo,logoutFunction)
+    .get(
+        authController.protectTo,
+        authController.logoutFunction
+    )
 
 
 

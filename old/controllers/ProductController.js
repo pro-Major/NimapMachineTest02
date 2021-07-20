@@ -1,8 +1,7 @@
-const multer = require('multer')
-const Excel = require('exceljs')
-const db = require('../models/index')
+const db = require('../models/index');
+const Excel = require('exceljs');
+const multer = require('multer');
 const port = 'http://localhost:5000'
-
 
 // Storing the image in the folder
 const storage = multer.diskStorage({
@@ -35,6 +34,31 @@ const uploads = multer({
     fileFilter: fileFilter,
 });
 
+
+//To create a Products using multer 
+exports.createProduct = [uploads.single('Image'), async (req, res) => {
+    try {
+        const data = await db.Products.create({
+
+            PName: req.body.PName,
+            price: req.body.price,
+            Image: port + "/uploads/" + req.file.filename,
+            CategoryId: req.body.CategoryId
+        })
+        res.status(200).json({
+            success: true,
+            data
+        })
+    }
+    catch (error) {
+        return res.status(500).json({
+            success:false,
+            error: error.errors[0].message
+        })
+    }
+}]
+
+//Getting all products 
 exports.createProduct = [uploads.single('Image'), async (req, res) => {
     try {
         const data = await db.Products.create({
@@ -51,12 +75,13 @@ exports.createProduct = [uploads.single('Image'), async (req, res) => {
     catch (err) {
         return res.status(500).json({
             message: "Something went Wrong",
-            err: err.name
+            err: err.errors[0].message
+
         })
     }
 }]
 
-
+//Getting All Products with pagination
 
 exports.getProduct = async (req, res) => {
     try {
@@ -120,7 +145,6 @@ exports.getProduct = async (req, res) => {
             cell.font = { bold: true }
         })
         const wexcel = await workbook.xlsx.writeFile(`${__dirname}/Product.xlsx`)
-        console.log("TRUEs")
         res.status(200).json({
             status: "Can read the data from the excel fille",
             products
@@ -134,43 +158,70 @@ exports.getProduct = async (req, res) => {
 }
 
 
-exports.getProductById = async (req, res) => {
+//Getting Products By ID 
+exports.getProductByID = async (req,res)=> {
     try {
-        const data = await db.Products.findByPk(req.params.id);
-        if (!data) {
-            return res.status(400).json({
-                message: "Invalid Id"
-            })
+        const data = await db.Products.findOne({
+            where:{id:req.params.id},
+            include: [
+                {
+                    model: db.Category,
+                    attribute: ['CName']
+                }
+            ]
+        });
+        if(!data) {
+            return (
+                res.status(400).json({
+                    success : false,
+                    message : "Invalid ID"
+                })
+            )
         }
-        return res.status(200).json({ data })
-    } catch (err) {
-        return res.status(500).json({
-            message: "Internal Server Error",
-            err: err
+        return res.status(200).json({
+            success : true,
+            data
         })
+    } catch (error) {
+        return (
+            res.status(500).json({
+                success : false,
+                message : "Internal Server Error "
+            })
+        )           
     }
 }
 
-
-exports.deleteProductById = async (req, res) => {
+//Deletre a Product by using ID
+exports.deleteProductById = async (req,res)=> {
     try {
-        const data = await db.Products.destroy({ where: { id: req.params.id } });
-        if (!data) {
-            return res.status(400).json({
-                message: "Invalid Id"
-            })
+        const data = await db.Products.destroy({where : {id: req.params.id}});
+        if(!data){
+            return (
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid Id"
+                })
+            )
         }
-        return res.status(200).json({ message: "Deleted Successfully" })
-    } catch (err) {
-        return res.status(500).json({
-            message: "Internal Server Error",
-            err: err.errors[0].message
-        })
+        return (
+            res.status(200).json({
+                success :true,
+                message: "Deleted Successfully"
+            })
+        )
+    } catch (error) {
+        return (
+            res.status(500).json({
+                success : false,
+                error: error.errors[0].message
+            })
+        )
     }
 }
 
-
-exports.UpdateProductById = [uploads.single('Image'), async (req, res, next) => {
+//Update a Product By ID
+exports.updateProductById = [uploads.single('Image'), async (req, res, next) => {
     try {
         const id = req.params.id;
         if (req.file) {
@@ -182,21 +233,20 @@ exports.UpdateProductById = [uploads.single('Image'), async (req, res, next) => 
         else {
             var data = req.body
         }
-        console.log(data)
         const updatedata = await db.Products.update(data, {
             where: { id: id }
         })
         return res.status(200).json({
+            success:true,
             message: "Updated Successfully"
         })
     }
     catch (err) {
         return res.status(500).json({
+            success:false,
             message: "Internal Server Error",
             err: err.errors[0].message
         })
     }
 }
 ]
-
-

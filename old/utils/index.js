@@ -1,14 +1,9 @@
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
 const dotenv = require('dotenv')
 dotenv.config({ path: './.env' })
-const authController = require('../controllers/authController')
+const authController =require('../controllers/authController');
 
-// HashPassword
-exports.hashPassword = (password) => bcrypt.hash(password, 10)
 
-// ComparePassword
-exports.comparePassword = (password, hash) => bcrypt.compareSync(password, hash)
 
 
 // Create Token

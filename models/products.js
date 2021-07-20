@@ -1,22 +1,23 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-const products = sequelize.define('Products', {
-    PName: {type : DataTypes.STRING, unique:{args:true,msg:"Product Already Exist"}},
+
+  const Products = sequelize.define('Products', {
+    PName: DataTypes.STRING,
     price: DataTypes.INTEGER,
     Image: DataTypes.STRING,
     CategoryId: DataTypes.INTEGER
-},{});
-products.associate = function (models) {
-  products.belongsTo(models.Category, {
-    foreignKey: 'CategoryId',
-  })
- products.hasMany(models.Cart, {
-    foreignKey: 'productid',
-    onDelete: 'CASCADE'
-  })
-}
-  return products;
+  }, {});
+
+  Products.associate = function (models) {
+    Products.belongsTo(models.Category, {
+      foreignKey: 'CategoryId',
+      onDelete: 'CASCADE'
+    })
+    Products.hasMany(models.Cart, {
+      foreignKey: 'productid',
+      onDelete: 'CASCADE'
+    })
+  }
+  return Products;
 };

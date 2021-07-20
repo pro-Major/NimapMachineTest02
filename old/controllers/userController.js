@@ -1,19 +1,18 @@
-const db = require('../models/index')
+const db = require('../models/index');
 const jwt = require('jsonwebtoken')
 const authController = require('../controllers/authController')
-
-exports.getMe = async (req, res) => {
+exports.getMe =async(req,res)=> {
     try {
-        const userdata = await db.User.findOne({ where: { id: req.user.id } })
-        console.log(userdata)
+        const userdata = await db.User.findOne({where : {id:req.user.id}})
         return res.status(200).json({
-            userdata: userdata
+            userdata:userdata
         })
-
-    } catch (err) {
+        
+    }   catch (error) {
         return res.status(500).json({
+            success : false,
             status: "Internal Server Error",
-            err: err
+            error: error
         })
     }
 }

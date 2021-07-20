@@ -1,84 +1,81 @@
 const db = require('../models/index')
 
-//Creating a Category 
-exports.createCategory = async (req,res)=> {
-    try{
-        let data = await db.Category.create({
-            CName:req.body.CName
+exports.createCategory = async (req, res, next) => {
+    try {
+        const data = await db.Category.create({
+            CName: req.body.CName
         })
-        return(
-            res.status(200).json({
-                succes : true,
-                message :"Category Added Successfully",
-                category:data
-            })
-        )
-
+        return res.status(200).json({
+            status: "Added Successfully",
+            category: data
+        })
     }
-    catch(error){
-        res.status(200).json({
-            succes : false,
-            message : "Somethin went wrong",
-            error: error.errors[0].message
+    catch (err) {
+        res.status(500).json({
+            status: "Something went wrong",
+            err: err.errors[0].message
         })
     }
 }
 
-//Getting All category 
-exports.getCategory = async(req,res)=>{
+exports.GetCategory = async (req, res, next) => {
     try {
-        const data = await db.Category.findAndCountAll({ 
+        const getPagination = (page, size) => {
+            const limit = size ? +size : 5;
+            const offset = page ? page * limit : 0;
+            return { limit, offset };
+        };
+        const getPagingData = (data, page, limit) => {
+            const { count: totalItems, rows: category } = data;
+            const currentPage = page ? +page : 0;
+            const totalPages = Math.ceil(totalItems / limit);
+            return { totalItems, category, totalPages, currentPage };
+        };
+        const { page, size } = req.query;
+        const { limit, offset } = getPagination(page, size)
+
+        const data = await db.Category.findAndCountAll({
+            limit: limit,
+            offset: offset,
         })
-        return(
-        res.status(200).json({
-            succes:true,
-            data
-        })
-        )
-       
-    } catch (error) {
+        const { category } = getPagingData(data, page, limit)
+        return res.status(200).json({ category })
+    }
+    catch (err) {
         res.status(400).json({
-            success:false,
-            error
+            status: "Failed",
+            err: err
         })
     }
 }
 
-//Getting a Single Category 
-exports.getCategoryById = async (req,res)=>{
+exports.GetCategoryById = async (req, res, next) => {
     try {
-        let data = await db.Category.findByPk(req.params.id);
-        if(!data){
+        const data = await db.Category.findByPk(req.params.id);
+        if (!data) {
             return res.status(400).json({
-                success:false,
-                message:"Invalid Id"
+                message: "Invalid Id"
             })
         }
-        return(
-            res.status(200).json({
-            success:true,
-            data
-        })
-        )
-    } catch (error) {
+        return res.status(200).json({ data })
+    }
+    catch (err) {
         res.status(400).json({
-            success:false,
-            error
+            status: "Failed",
+            err: err
         })
     }
 }
 
-//Delete a Category 
-exports.deleteCategoryById= async (req, res, next) => {
+exports.RemoveCategory = async (req, res, next) => {
     try {
         const removedata = await db.Category.destroy({ where: { id: req.params.id } })
         if (removedata === 0) {
             return res.status(400).json({
-                message: `Category do not exist!`,
+                message: `Category with that id =${req.params.id} is not present`,
             })
         }
         return res.status(200).json({
-            succes:true,
             status: "Category deleted Successfully",
         })
     }
@@ -90,20 +87,19 @@ exports.deleteCategoryById= async (req, res, next) => {
     }
 }
 
-exports.updateCategory = async (req, res, next) => {
+exports.UpdateCategory = async (req, res, next) => {
     try {
-        
         const updatadata = await db.Category.update({
             CName: req.body.CName
         }, { where: { id: req.params.id } })
-
         if (updatadata.includes(0)) {
             return res.status(400).json({
-                message: `Category with that id =${req.params.id} does not exists!`,
+                message: `Category with that id =${req.params.id} is not present`,
             })
         }
         return res.status(200).json({
-            message: "Category Updated Successfully",
+            message: "Category updated successfully",
+            updatadata: updatadata
         })
     } catch (err) {
         return res.status(500).json({

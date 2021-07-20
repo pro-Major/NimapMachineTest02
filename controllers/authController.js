@@ -1,66 +1,49 @@
-const db = require('../models/index');
-const {createToken} = require('../utils');
-//importing bcrypt to convert password into hash format
+const db = require('../models/index')
+const helper = require('../utils/index.js')
+const { promisify } = require("util");
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt');
+const dotenv = require('dotenv')
 const client = require('../redisConnect')
+dotenv.config({ path: './.env' })
 
 
 
 
-//Register a User 
-exports.SignUp = async (req, res) => {
+exports.SignUp = async (req, res, next) => {
     try {
-        const { name, email,number, password, roles } = req.body;
-       
-        //Converting passwords in Hash Format
-        let hashPassword = await bcrypt.hash(password, 10)
-        const user = await db.User.create({ name, email,number, password: hashPassword, roles })
-        return (
-            res.status(200).json({
-                success: true,
-                user
-            })
-        )
-    } catch (error) {
-        console.log(error);
+        const { name, email, password, roles } = req.body;
+        const hash = await helper.hashPassword(password)
+        const user = await db.User.create({ name, email, password: hash, roles })
+        return res.status(200).send({ user })
+    } catch (err) {
         res.status(400).json({
-            success: false,
-            message: 'Registeration Failed',
-            error: error
+            message: 'Failed'
         })
     }
 
 }
 
-//Login a User 
-exports.Login = async (req, res) => {
+exports.Login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         if (!email && !password) {
-            return (
-                req.status(400).json({
-                    success: false,
-                    message: "Please Enter Credentials Carefully!"
-                })
-            )
+            return res.status(400).json({
+                message: "Enter the password and email"
+            })
         }
         const useremail = await db.User.findOne({ where: { email } })
         if (!useremail) {
-            return (
-                res.status(400).json({
-                    message: "User Do Not Exist"
-                })
-            )
+            return res.status(400).json({
+                message: "Email not exists"
+            })
         }
-        if (!(await bcrypt.compareSync(password, useremail.dataValues.password))) {
-            return (
-                res.status(400).json({
-                    message: "Wrong Password Please Try Again."
-                })
-            )
+        if (!(await helper.comparePassword(password, useremail.dataValues.password))) {
+            return res.status(400).json({
+                message: "Password is incorrect"
+            })
         }
-        const { token, refreshtoken } = createToken(useremail)
+        const { token, refreshtoken } = helper.createToken(useremail)
+
         console.log("token,refreshtoken", token, refreshtoken)
 
         res.status(200).send({
@@ -70,79 +53,12 @@ exports.Login = async (req, res) => {
             useremail
         })
 
-
-    } catch (error) {
+    } catch (e) {
         res.status(500).json({
-            success: false,
-            message: "Internal Server Error "
+            message: "Something went wrong"
         })
     }
 }
-//Generate Refresh Token
-exports.generateRefreshToken = (id, email) => {
-    console.log("ID EMAIL IN GENERATE REFRESH", id, email)
-    const refreshtoken = jwt.sign({ id, email }, process.env.JWT_REFERESHKEY, { expiresIn: process.env.JWT_REFERESHTIME })
-    console.log("REFRESH TOKEN", refreshtoken)
-
-    client.get(id.toString(), (err, data) => {
-        if (err) throw err;
-        client.set(id.toString(), JSON.stringify({ token: refreshtoken }));
-    })
-
-
-
-    return refreshtoken;
-}
-
-
-//verifying refresh token 
-
-exports.VerifyRefreshToken = async (req, res, next) => {
-    try {
-        const token = req.body.token; 
-        if (token === null) {
-            return res.status(400).json({
-                status: false,
-                message: "Invalid Request",
-            })
-        }
-
-        let decoded = await promisify(jwt.verify)(token, process.env.JWT_REFERESHKEY);
-        console.log("DECODED VALUE", decoded)
-        const freshUser = await db.User.findByPk(decoded.id);
-        req.user = freshUser.dataValues;
-
-        // Verify if token is in store or not
-        client.get(decoded.id.toString(), (err, data) => {
-            if (err) throw err;
-
-            if (data === null) {
-                return res.status(401).json({
-                    status: false,
-                    message: "Invalid Request"
-                })
-            }
-
-            if (JSON.parse(data).token !== token) {
-                return res.status(400).json({
-                    status: false,
-                    message: "Your token is not same as token stored in"
-                })
-            }
-            next();
-        })
-
-    } catch (err) {
-        return res.status(500).json({
-            status: false,
-            message: "Your session is not valid",
-            data: err
-
-        })
-    }
-
-}
-
 
 exports.protectTo = async (req, res, next) => {
     try {
@@ -193,7 +109,66 @@ exports.protectTo = async (req, res, next) => {
 }
 
 
-//Logout 
+exports.VerifyRefreshToken = async (req, res, next) => {
+    try {
+        const token = req.body.token;
+        if (token === null) {
+            return res.status(400).json({
+                status: false,
+                message: "Invalid Request",
+            })
+        }
+
+        let decoded = await promisify(jwt.verify)(token, process.env.JWT_REFERESHKEY);
+        console.log("DECODED VALUE", decoded)
+        const freshUser = await db.User.findByPk(decoded.id);
+        req.user = freshUser.dataValues;
+
+        // Verify if token is in store or not
+        client.get(decoded.id.toString(), (err, data) => {
+            if (err) throw err;
+
+            if (data === null) {
+                return res.status(401).json({
+                    status: false,
+                    message: "Invalid Request"
+                })
+            }
+
+            if (JSON.parse(data).token !== token) {
+                return res.status(400).json({
+                    status: false,
+                    message: "Your token is not same as token stored in"
+                })
+            }
+            next();
+        })
+
+    } catch (err) {
+        return res.status(500).json({
+            status: false,
+            message: "Your session is not valid",
+            data: err
+
+        })
+    }
+
+}
+
+exports.generateRefreshToken = (id, email) => {
+    console.log("ID EMAIL IN GENERATE REFRESH", id, email)
+    const refreshtoken = jwt.sign({ id, email }, process.env.JWT_REFERESHKEY, { expiresIn: process.env.JWT_REFERESHTIME })
+    console.log("REFRESH TOKEN", refreshtoken)
+
+    client.get(id.toString(), (err, data) => {
+        if (err) throw err;
+        client.set(id.toString(), JSON.stringify({ token: refreshtoken }));
+    })
+
+
+
+    return refreshtoken;
+}
 
 exports.logoutFunction = async (req, res) => {
     try {
@@ -219,7 +194,6 @@ exports.logoutFunction = async (req, res) => {
     }
 
 }
-
 
 exports.restrictTo = (...roles) => {
     return (req, res, next) => {
