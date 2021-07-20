@@ -13,6 +13,10 @@ products.associate = function (models) {
   products.belongsTo(models.Category, {
     foreignKey: 'CategoryId',
   })
+ products.hasMany(models.Cart, {
+    foreignKey: 'productid',
+    onDelete: 'CASCADE'
+  })
 }
   return products;
 };

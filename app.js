@@ -8,7 +8,7 @@ const urlencodedParser = bodyParser.urlencoded({extended:false});
 const ProductRoute = require('./routes/productRoutes');
 const CategoryRoute = require('./routes/categoryRoutes');
 const AuthRoute = require('./routes/authRoutes');
-
+const visitroutes = require('./routes/visiroRoutes')
 
 //Set Templating Engine
 app.set('view engine','ejs');
@@ -31,7 +31,7 @@ app.get('/register',(req,res)=>{
 app.use('/api/products',ProductRoute);
 app.use('/api/category',CategoryRoute);
 app.use('/api/user',urlencodedParser,AuthRoute);
-
+app.use('/api/visitor', visitroutes)
 
 
 

@@ -11,7 +11,9 @@ AuthRoute
         .notEmpty().withMessage('Email Cannot be empty ')
         .isEmail().withMessage('Please Write proper Email. ')
         .normalizeEmail().toLowerCase(),
-        body('number').trim().isNumeric().isMobilePhone().withMessage("Mobile Number is Not Valid"),
+        body('number').trim().isNumeric().isMobilePhone().withMessage("Mobile Number is Not Valid")
+        .isLength(10).withMessage("min 10 length"),
+
         body('password').trim().isLength(2).withMessage('Password min length 2'),
 
         (req, res, next) => {

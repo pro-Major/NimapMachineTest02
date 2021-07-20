@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
   Category.associate = function (models) {
     Category.hasMany(models.Products, {
       foreignKey: 'CategoryId',
+      onDelete: 'CASCADE'
     })
   }
   return Category;
