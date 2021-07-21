@@ -1,6 +1,7 @@
 const db = require("../models/index");
 const Excel = require('exceljs')
-
+const port = 'http://localhost:5000'
+const readXlsxFile = require('read-excel-file/node')
 
 exports.getProductExcel = async (req,res)=> {
     try {
@@ -46,30 +47,12 @@ exports.getProductExcel = async (req,res)=> {
     }
 }
 
+exports.uploadFile = (req, res) => {
 
+    try{
+        let filePath = port+"/uploads/" + req.file.filename;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-exports.uploadMultipleFiles = async (req, res) => {
-	const messages = [];
-
-	for (const file of req.files) {
-        try{
-            let filePath = __basedir + "/uploads/" + file.filename;
-            let rows = await readXlsxFile(filePath);
-    
+        readXlsxFile(filePath).then(rows => {
             // `rows` is an array of rows
             // each row being an array of cells.   
             console.log(rows);
@@ -77,53 +60,38 @@ exports.uploadMultipleFiles = async (req, res) => {
             // Remove Header ROW
             rows.shift();
             
-            const Products = [];
+            const products = [];
     
             let length = rows.length;
     
             for(let i=0; i<length; i++){
     
-                let Products = {
-                    id: rows[i][0],
-                    name: rows[i][1],
-                    address: rows[i][2],
-                    age: rows[i][3]
+                let product = {
+                    PName: rows[i][0],
+                    price: rows[i][1],
+                    Image: rows[i][2],
+                    CategoryId: rows[i][3]
                 }
     
-                customers.push(customer);
+                products.push(product);
             }
     
-            uploadResult = await Customer.bulkCreate(customers);
-    
-            // It will now wait for above Promise to be fulfilled and show the proper details
-            console.log(uploadResult);
-    
-            if (!uploadResult){
-                const result = {
-                    status: "fail",
-                    filename: file.originalname,				
-                    message: "Can NOT upload Successfully",
-                }
-    
-                messages.push(result);
-            } else {
+            Products.bulkCreate(products).then(() => {
                 const result = {
                     status: "ok",
-                    filename: file.originalname,
+                    filename: req.file.originalname,
                     message: "Upload Successfully!",
                 }
-                messages.push(result);
-            }                   
-        }catch(error){
-            const result = {
-                status: "fail",
-                filename: file.originalname,				
-                message: "Error -> " + error.message
-            }
-
-            messages.push(result);
+        
+                res.json(result);
+            });
+        });
+    }catch(error){
+        const result = {
+            status: "fail",
+            filename: req.file.originalname,
+            message: "Upload Error! message = " + error
         }
-	}
-
-	return res.json(messages);
+        res.json(result);
+    }
 }
