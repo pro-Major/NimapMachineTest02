@@ -11,13 +11,13 @@ exports.productValidation = [
         .custom(async (value) => {
             return await models.Products.findOne({
                 where: {
-                    product: {
+                    PName: {
                         [Op.iLike]: value
                     }
                 },
                 isActive: true
-            }).then(product => {
-                if (product) {
+            }).then(PName => {
+                if (PName) {
                     return Promise.reject("Product name already exist !");
                 }
             })

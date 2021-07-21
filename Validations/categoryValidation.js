@@ -16,8 +16,8 @@ exports.categoryvalidation = [
                     }
                 },
                 isActive: true
-            }).then(category => {
-                if (category) {
+            }).then(CName => {
+                if (CName) {
                     return Promise.reject("Category name already exist !");
                 }
             })
