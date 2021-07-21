@@ -83,7 +83,7 @@ exports.protectTo = async (req, res, next) => {
         const newUser = await db.User.findByPk(decoded.id);
         if (!newUser) {
             return res.status(400).json({
-                message: "User is not present"
+                message: "User Already Exist."
             })
         }
         req.user = newUser.dataValues;
@@ -197,7 +197,7 @@ exports.logoutFunction = async (req, res) => {
     }
 
 }
-
+//Handline User Roles
 exports.restrictTo = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.roles)) {

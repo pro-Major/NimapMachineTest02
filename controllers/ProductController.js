@@ -91,38 +91,8 @@ exports.getProduct = async (req, res) => {
             ]
         })
         const { products } = getPagingData(data, page, limit)
-        const workbook = new Excel.Workbook();
-        const worksheet = workbook.addWorksheet('Product Excel')
-        worksheet.columns = [
-            {
-                header: 'ID', key: 'id', width: 20
-            },
-            {
-                header: 'Product Name', key: 'PName', width: 20
-            },
-            {
-                header: 'Price', key: 'price', width: 20
-            },
-            {
-                header: 'Image', key: 'Image', width: 40
-            },
-            {
-                header: 'Category', key: 'CategoryId', width: 20
-            }
-        ]
-        let count = 1;
-        const pdata = await db.Products.findAll({})
-        pdata.forEach(product => {
-            worksheet.addRow(product)
-            count += 1;
-        });
-        worksheet.getRow(1).eachCell((cell) => {
-            cell.font = { bold: true }
-        })
-        const wexcel = await workbook.xlsx.writeFile(`${__dirname}/Product.xlsx`)
-        console.log("TRUEs")
         res.status(200).json({
-            status: "Can read the data from the excel fille",
+            status: "All Products",
             products
         })
     }
