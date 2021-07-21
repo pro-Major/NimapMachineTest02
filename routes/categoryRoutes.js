@@ -2,17 +2,16 @@ const {createCategory,GetCategory,RemoveCategory,UpdateCategory,GetCategoryById}
 const {protectTo,restrictTo} = require('../controllers/authController')
 const express = require('express')
 const catrouter = express.Router()
+const {categoryvalidation} = require('../Validations/categoryValidation')
+const validationError = require('../middleware/validationError')
+catrouter
+    .post('/',categoryvalidation,validationError,createCategory)
+    .get('/',GetCategory)
 
 catrouter
-    .route('/')
-    .post(restrictTo('Admin'),createCategory)
-    .get(GetCategory)
-
-catrouter
-    .route('/:id')
-    .delete(protectTo,restrictTo('Admin'),RemoveCategory)
-    .get(GetCategoryById)
-    .put(protectTo,restrictTo('Admin'),UpdateCategory)
+    .delete('/:id',RemoveCategory)
+    .get('/:id',GetCategoryById)
+    .put('/:id',UpdateCategory)
 
 
 module.exports = catrouter;

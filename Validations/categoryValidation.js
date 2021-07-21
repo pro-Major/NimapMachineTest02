@@ -11,7 +11,7 @@ exports.categoryvalidation = [
         .custom(async (value) => {
             return await models.Category.findOne({
                 where: {
-                    category: {
+                    CName: {
                         [Op.iLike]: value
                     }
                 },

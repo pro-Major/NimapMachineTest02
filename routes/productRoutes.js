@@ -1,12 +1,12 @@
 const {createProduct,getProduct,getProductById,deleteProductById,UpdateProductById} = require('../controllers/ProductController')
 const {protectTo,restrictTo} = require('../controllers/authController')
+const {productValidation} = require('../Validations/productValidation')
 const express = require("express")
 const productroute = express.Router()
 
 productroute
-    .route('/')
-    .post(protectTo,restrictTo('Supervisor'),createProduct) 
-    .get(getProduct)
+    .post('/',productValidation,createProduct)  //protectTo,restrictTo('Supervisor'),
+    .get('/',getProduct)
 
 productroute
     .route('/:id')
