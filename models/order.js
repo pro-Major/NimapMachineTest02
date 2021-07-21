@@ -1,21 +1,22 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  const Order = sequelize.define('Order,',{
+  const Order = sequelize.define('Order',{
     user: DataTypes.STRING,
     product: DataTypes.STRING,
     quantity: DataTypes.STRING
   },{});
   
-  Order.associate = function (models) {
+  Order.associate = function (models)
+   {
 
     Order.belongsTo(models.User, {
-      foreignKey: 'userid',
+      foreignKey: 'user',
       onDelete: 'CASCADE'
     })
 
     Order.belongsTo(models.Products, {
-      foreignKey: 'productid',
+      foreignKey: 'product',
       onDelete: 'CASCADE'
     })
   }

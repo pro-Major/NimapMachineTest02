@@ -40,7 +40,7 @@ app.use('/api/products', productroute)
 app.use('/api/cart', cartroute)
 app.use('/api/visitor', visitroutes)
 app.use('/api/excel',excelRoute)
-app.use('/api/orders', orderRoute)
+app.use('/api/order', orderRoute)
 
 
 

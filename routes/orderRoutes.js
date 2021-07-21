@@ -2,7 +2,7 @@ const express = require('express')
 const orderRoute = express.Router()
 const {createOrder,getOrders} = require('../controllers/orderController')
 orderRoute
-// .post('/create',createOrder)
+.post('/create',createOrder)
 
 
 orderRoute
