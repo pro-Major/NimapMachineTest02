@@ -13,6 +13,7 @@ const productroute = require('./routes/productRoutes')
 const cartroute = require('./routes/cartroutes')
 const visitroutes = require('./routes/visiroRoutes')
 const excelRoute = require('./routes/excelRoute')
+const orderRoute = require('./routes/orderRoutes')
 //Set Templating Engine
 app.set('view engine','ejs');
 
@@ -39,7 +40,7 @@ app.use('/api/products', productroute)
 app.use('/api/cart', cartroute)
 app.use('/api/visitor', visitroutes)
 app.use('/api/excel',excelRoute)
-//app.use('/api/orders', orderroute)
+app.use('/api/orders', orderRoute)
 
 
 

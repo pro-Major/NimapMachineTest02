@@ -8,8 +8,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
 
   Cart.associate = function (models) {
-    console.log(models)
-
     Cart.belongsTo(models.User, {
       foreignKey: 'userid',
       onDelete: 'CASCADE'

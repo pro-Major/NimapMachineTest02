@@ -23,7 +23,7 @@ exports.createCart = async (req, res) => {
         })
     }
     catch (err) {
-        res.status(500).json({
+        res.status(400).json({
             status: "Something went wrong",
             err: err
         })
