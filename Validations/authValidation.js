@@ -58,7 +58,7 @@ exports.authValidation = [
                 },
             }).then(result => {
                 if (result) {
-                    return Promise.reject('UserName already exists')
+                    return Promise.reject('Mobile Number already exists')
                 }
             })
         })

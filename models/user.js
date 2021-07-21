@@ -6,7 +6,10 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     number:DataTypes.STRING,
     password: DataTypes.STRING,
-    roles: DataTypes.STRING
+    roles: {
+      type : DataTypes.STRING,
+      defaultValue: "user",
+    }
   }, {})
 
   User.associate = function (models) {
