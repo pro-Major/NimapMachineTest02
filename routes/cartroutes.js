@@ -1,25 +1,19 @@
-const authController = require('../controllers/authController')
-const cartController = require('../controllers/CartController')
+const {AuthorizeUser} = require("../middleware/AuthorizeUser")
+const {createCart,getCartUser} = require('../controllers/CartController')
 const express = require('express')
-const cartroute = express.Router()
+const cartRouter = express.Router()
 
 
-cartroute
+cartRouter
     .route('/:productid')
-    .post(
-        authController.protectTo,
-        cartController.createCart
-    )
+    .post(AuthorizeUser,createCart)
 
-cartroute
+cartRouter
     .route('/getCart')
-    .get(
-        authController.protectTo,
-        cartController.getCartUser
-    )
+    .get(AuthorizeUser,getCartUser)
 
 
 
 
 
-module.exports = cartroute
+module.exports = cartRouter

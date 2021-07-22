@@ -8,12 +8,12 @@ const helmet = require('helmet')
 const xss = require('xss-clean')
 //Importing All Routes 
 const authRouter = require('./routes/authRoutes')
-const catrouter = require('./routes/categoryRoutes')
-const productroute = require('./routes/productRoutes')
-const cartroute = require('./routes/cartroutes')
-const visitroutes = require('./routes/visiroRoutes')
-const excelRoute = require('./routes/excelRoute')
-const orderRoute = require('./routes/orderRoutes')
+const categoryRouter = require('./routes/categoryRoutes')
+const productRouter = require('./routes/productRoutes')
+const cartRouter = require('./routes/cartroutes')
+const userRouter = require('./routes/visiterRoutes')
+const excelRouter = require('./routes/excelRoute')
+const orderRouter = require('./routes/orderRoutes')
 //Set Templating Engine
 app.set('view engine','ejs');
 
@@ -35,12 +35,12 @@ app.get('/register',(req,res)=>{
 
 
 app.use('/api/user', authRouter)
-app.use('/api/category', catrouter)
-app.use('/api/products', productroute)
-app.use('/api/cart', cartroute)
-app.use('/api/visitor', visitroutes)
-app.use('/api/excel',excelRoute)
-app.use('/api/order', orderRoute)
+app.use('/api/category', categoryRouter)
+app.use('/api/products', productRouter)
+app.use('/api/cart', cartRouter)
+app.use('/api/visitor', userRouter)
+app.use('/api/excel',excelRouter)
+app.use('/api/order', orderRouter)
 
 
 

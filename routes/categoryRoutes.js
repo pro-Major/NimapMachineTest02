@@ -1,17 +1,18 @@
-const {createCategory,GetCategory,RemoveCategory,UpdateCategory,GetCategoryById} = require('../controllers/CategoryController')
-const {protectTo,restrictTo} = require('../controllers/authController')
 const express = require('express')
-const catrouter = express.Router()
+const categoryRouter = express.Router()
 const {categoryvalidation} = require('../Validations/categoryValidation')
 const validationError = require('../middleware/validationError')
-catrouter
-    .post('/',categoryvalidation,validationError,createCategory)
+const {AuthorizeUser,AccessibleOnlyTo} = require('../middleware/AuthorizeUser')
+const {createCategory,GetCategory,RemoveCategory,UpdateCategory,GetCategoryById} = require('../controllers/CategoryController')
+
+categoryRouter
+    .post('/',categoryvalidation,validationError,AuthorizeUser,AccessibleOnlyTo('Admin'),createCategory)
     .get('/',GetCategory)
 
-catrouter
+categoryRouter
     .delete('/:id',RemoveCategory)
     .get('/:id',GetCategoryById)
-    .put('/:id',UpdateCategory)
+    .put('/:id',AuthorizeUser,AccessibleOnlyTo('Admin'),UpdateCategory)
 
 
-module.exports = catrouter;
+module.exports = categoryRouter;

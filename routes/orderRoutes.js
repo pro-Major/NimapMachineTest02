@@ -1,11 +1,11 @@
 const express = require('express')
-const orderRoute = express.Router()
+const orderRouter = express.Router()
 const {createOrder,getOrders} = require('../controllers/orderController')
-orderRoute
+orderRouter
 .post('/create',createOrder)
 
 
-orderRoute
+orderRouter
 .get('/',getOrders)
 
 
@@ -14,4 +14,4 @@ orderRoute
 
 
 
-module.exports = orderRoute;
+module.exports = orderRouter;

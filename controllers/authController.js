@@ -8,7 +8,7 @@ dotenv.config({ path: './.env' })
 
 
 
-
+//Register A User/Admin/Supervisor
 exports.SignUp = async (req, res, next) => {
     try {
 
@@ -24,7 +24,7 @@ exports.SignUp = async (req, res, next) => {
     }
 
 }
-
+//Login a User/Admin/Supervisor
 exports.Login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -58,55 +58,6 @@ exports.Login = async (req, res, next) => {
     } catch (e) {
         res.status(500).json({
             message: "Something went wrong"
-        })
-    }
-}
-
-exports.protectTo = async (req, res, next) => {
-    try {
-        let token;
-        
-        if (
-            req.headers.authorization &&
-            req.headers.authorization.startsWith("Bearer")
-        ) {
-            token = req.headers.authorization.split(" ")[1];
-        }
-        if (!token) {
-            return res.status(400).json({
-                message: "Please Login First"
-            })
-        }
-        let decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRETKEY);
-
-        console.log("DECODED VALUE", decoded)
-        const newUser = await db.User.findByPk(decoded.id);
-        if (!newUser) {
-            return res.status(400).json({
-                message: "User Already Exist."
-            })
-        }
-        req.user = newUser.dataValues;
-        req.token = token;
-        console.log('BLTOKEN' + decoded.id.toString())
-
-        // Verify with blacklist token
-        client.get('BLTOKEN' + decoded.id.toString(), (err, data) => {
-            if (err) throw err;
-
-            if (data === token) {
-                res.status(500).json({
-                    message: "Blacklisted token",
-                })
-            }
-            next();
-        })
-
-
-    } catch (err) {
-        res.status(500).json({
-            message: "Something went Wrong",
-            err: err
         })
     }
 }
@@ -196,17 +147,4 @@ exports.logoutFunction = async (req, res) => {
         })
     }
 
-}
-//Handline User Roles
-exports.restrictTo = (...roles) => {
-    return (req, res, next) => {
-        if (!roles.includes(req.user.roles)) {
-            console.log("ROLE", req.user.roles)
-            return res.status(404).json({
-                status: "Fail",
-                message: "You do not have permission",
-            });
-        }
-        next();
-    };
 }

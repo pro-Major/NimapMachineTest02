@@ -1,21 +1,19 @@
 const {createProduct,getProduct,getProductById,deleteProductById,UpdateProductById} = require('../controllers/ProductController')
 const {protectTo,restrictTo} = require('../controllers/authController')
+const express = require("express")
+const productRouter = express.Router()
 const {productValidation} = require('../Validations/productValidation')
 const validationError = require('../middleware/validationError')
-const express = require("express")
-const productroute = express.Router()
+const {AccessibleOnlyTo,AuthorizeUser} = require('../middleware/AuthorizeUser')
+productRouter
+    .post('/',AuthorizeUser,AccessibleOnlyTo('Supervisor'),createProduct)  
+    .get('/',getProduct)
 
-productroute
-    .post('/',productValidation,createProduct)  //protectTo,restrictTo('Supervisor'),
-    .get('/',protectTo,getProduct)
-
-productroute
+productRouter
     .route('/:id')
     .get(getProductById)
-    .delete(
-        protectTo,restrictTo('Supervisor'),deleteProductById)
-    .patch(
-        protectTo,restrictTo('Supervisor'),UpdateProductById)
+    .delete(deleteProductById)
+    .patch(AuthorizeUser,AccessibleOnlyTo('Supervisor'),UpdateProductById)
 
 
-module.exports = productroute
+module.exports = productRouter

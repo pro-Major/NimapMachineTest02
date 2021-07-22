@@ -159,7 +159,7 @@ exports.UpdateProductById = [uploads.single('Image'), async (req, res, next) => 
             where: { id: id }
         })
         return res.status(200).json({
-            message: "Updated Successfully"
+            message: "Product Updated Successfully",
         })
     }
     catch (err) {
