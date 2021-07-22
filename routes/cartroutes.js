@@ -7,14 +7,14 @@ const cartroute = express.Router()
 cartroute
     .route('/:productid')
     .post(
-        // authController.protectTo,
+        authController.protectTo,
         cartController.createCart
     )
 
 cartroute
     .route('/getCart')
     .get(
-        // authController.protectTo,
+        authController.protectTo,
         cartController.getCartUser
     )
 

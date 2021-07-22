@@ -14,6 +14,7 @@ exports.comparePassword = (password, hash) => bcrypt.compareSync(password, hash)
 // Create Token
 exports.createToken = ({ id, email }) => {
     console.log("ID EMAIL", id, email)
+    //sign methods cretes a token     jwt.io
     const token = jwt.sign({ id, email }, process.env.JWT_SECRETKEY, { expiresIn: process.env.JWT_SECRETTIME })
     console.log("HELPER TOKEN", token)
     const refreshtoken = authController.generateRefreshToken(id, email)

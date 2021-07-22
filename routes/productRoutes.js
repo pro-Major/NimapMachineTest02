@@ -7,7 +7,7 @@ const productroute = express.Router()
 
 productroute
     .post('/',productValidation,createProduct)  //protectTo,restrictTo('Supervisor'),
-    .get('/',getProduct)
+    .get('/',protectTo,getProduct)
 
 productroute
     .route('/:id')

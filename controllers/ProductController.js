@@ -36,7 +36,9 @@ const uploads = multer({
 });
 
 exports.createProduct = [uploads.single('Image'), async (req, res) => {
+    
     try {
+        console.log(req.body)
         const data = await db.Products.create({
             PName: req.body.PName,
             price: req.body.price,

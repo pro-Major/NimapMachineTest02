@@ -6,7 +6,7 @@ orderRoute
 
 
 orderRoute
-// .get('/',getOrders)
+.get('/',getOrders)
 
 
 
