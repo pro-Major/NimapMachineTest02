@@ -3,8 +3,9 @@ const db = require('../models')
 
 exports.createOrder = async (req, res) => {
     try {
+        console.log(req.user)
         const data = await db.Order.create({
-            user: req.body.user,
+            user: req.user.id,
             product: req.body.product,
             quantity: req.body.quantity
         })
@@ -26,10 +27,17 @@ exports.createOrder = async (req, res) => {
 exports.getOrders = async (req, res) => {
     try {
         const data = await db.Order.findAndCountAll({
-         include : [{
-            model: db.User,
-
-         }]
+            include: [
+                {
+                    model: db.Products,
+                    attributes: ['PName', 'price'],
+                   
+                },
+                {
+                    model: db.User,
+                    attributes: ['name']
+                }
+            ]
         })
         res.status(200).json({
             success: true,

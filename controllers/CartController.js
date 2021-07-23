@@ -32,6 +32,7 @@ exports.createCart = async (req, res) => {
 
 
 exports.getCartUser = async (req, res) => {
+    console.log(req.user)
     try {
         const usercartdata = await db.Cart.findAll(
             {

@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       product: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       quantity: {
         type: Sequelize.STRING
