@@ -3,7 +3,6 @@ const app = express();
 let ejs = require('ejs');
 const morgan = require('morgan');
 var bodyParser = require('body-parser');
-// const urlencodedParser = bodyParser.urlencoded({extended:false});
 const helmet = require('helmet')
 const xss = require('xss-clean')
 //Importing All Routes 
@@ -18,9 +17,12 @@ const orderRouter = require('./routes/orderRoutes')
 app.set('view engine','ejs');
 
 
-
+//Inbuilt Middleware 
 app.use(express.json());
 app.use('/uploads/', express.static("uploads"));
+
+
+//ThirdParty Middleware
 app.use(morgan("dev"));
 app.use(xss())
 app.use(helmet())
