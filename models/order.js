@@ -4,7 +4,9 @@ module.exports = (sequelize, DataTypes) => {
   const Order = sequelize.define('Order',{
     user: DataTypes.INTEGER,
     product: DataTypes.INTEGER,
-    quantity: DataTypes.STRING
+    quantity: DataTypes.STRING,
+    TotalPrice: DataTypes.INTEGER
+
   },{});
   
   Order.associate = function (models)

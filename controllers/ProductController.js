@@ -51,9 +51,9 @@ exports.createProduct = [uploads.single('Image'), async (req, res) => {
         })
     }
     catch (err) {
-        return res.status(500).json({
+        return res.status(400).json({
             message: "Something went Wrong",
-            err: err.name
+            err: (err.name == 'SequelizeUniqueConstraintError' ? 'Product Already Exist' : 'Mast Error')
         })
     }
 }]
